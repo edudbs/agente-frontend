@@ -1,231 +1,196 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agente de Agenda Inteligente</title>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> 
-    <style>
-        /* --- ESTILOS PARA TEMA ESCURO --- */
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 20px; 
-            background-color: #1a1a2e; /* Fundo muito escuro */
-            color: #e0e0e0; /* Texto claro padrão */
-        }
-        .container { 
-            max-width: 700px; 
-            margin: 0 auto; 
-            background: #2a2a4a; /* Fundo do container ligeiramente mais claro */
-            padding: 25px; 
-            border-radius: 12px; 
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-        }
-        h1 { 
-            color: #92e6a7; /* Verde claro para o título */
-            text-align: center; 
-            margin-bottom: 20px; 
-        }
-        #chat-area { 
-            border: 1px solid #4a4a6e;
-            padding: 15px; 
-            height: 350px; 
-            overflow-y: auto; 
-            margin-bottom: 15px; 
-            background-color: #24243e; /* Fundo da área de chat */
-            border-radius: 8px; 
-            line-height: 1.6; 
-        }
-        .user-message { 
-            text-align: right; 
-            margin: 10px 0; 
-            padding: 8px 12px; 
-            background-color: #005f99; /* Azul escuro para mensagens do usuário */
-            color: #ffffff; 
-            border-radius: 15px 15px 0 15px; 
-            max-width: 80%; 
-            margin-left: auto; 
-        }
-        .agent-message { 
-            text-align: left; 
-            margin: 10px 0; 
-            padding: 10px 15px; 
-            background-color: #4a4a6e; /* Fundo escuro do agente */
-            color: #e0e0e0; 
-            border-radius: 15px 15px 15px 0; 
-            max-width: 80%; 
-        }
-        .agent-message ul, .agent-message ol { 
-            padding-left: 20px; 
-            margin: 5px 0; 
-            color: #c0c0c0;
-        }
-        
-        #command-input { 
-            width: calc(100% - 100px); 
-            padding: 12px; 
-            box-sizing: border-box; 
-            border: 1px solid #92e6a7; 
-            border-radius: 20px 0 0 20px; 
-            outline: none; 
-            display: inline-block; 
-            background-color: #3a3a5a; /* Fundo do input */
-            color: #e0e0e0; /* Texto digitado */
-        }
-        #command-input::placeholder {
-            color: #a0a0b0; /* Cor do placeholder */
-        }
-        button { 
-            width: 100px; 
-            padding: 12px; 
-            background-color: #92e6a7; /* Verde claro para o botão */
-            color: #1a1a2e; /* Texto escuro no botão */
-            border: none; 
-            cursor: pointer; 
-            border-radius: 0 20px 20px 0; 
-            display: inline-block; 
-            margin-left: -5px; 
-        }
-        button:hover { 
-            background-color: #7bd48f; 
-        }
-        .input-group { 
-            display: flex; 
-        }
-        .error { 
-            color: #ff6b6b; 
-            font-weight: bold; 
-        }
-        small { 
-            display: block; 
-            margin-top: 5px; 
-            color: #a0a0b0; 
-            font-size: 0.8em; 
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agente de Agenda Inteligente</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script> 
+    <style>
+        /* --- ESTILOS PARA TEMA ESCURO --- */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 20px; 
+            background-color: #1a1a2e; /* Fundo muito escuro */
+            color: #e0e0e0; /* Texto claro padrão */
+        }
+        .container { 
+            max-width: 700px; 
+            margin: 0 auto; 
+            background: #2a2a4a; /* Fundo do container ligeiramente mais claro */
+            padding: 25px; 
+            border-radius: 12px; 
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+        h1 { 
+            color: #92e6a7; /* Verde claro para o título */
+            text-align: center; 
+            margin-bottom: 20px; 
+        }
+        #chat-area { 
+            border: 1px solid #4a4a6e;
+            padding: 15px; 
+            height: 350px; 
+            overflow-y: auto; 
+            margin-bottom: 15px; 
+            background-color: #24243e; /* Fundo da área de chat */
+            border-radius: 8px; 
+            line-height: 1.6; 
+        }
+        .user-message { 
+            text-align: right; 
+            margin: 10px 0; 
+            padding: 8px 12px; 
+            background-color: #005f99; /* Azul escuro para mensagens do usuário */
+            color: #ffffff; 
+            border-radius: 15px 15px 0 15px; 
+            max-width: 80%; 
+            margin-left: auto; 
+        }
+        .agent-message { 
+            text-align: left; 
+            margin: 10px 0; 
+            padding: 10px 15px; 
+            background-color: #4a4a6e; /* Fundo escuro do agente */
+            color: #e0e0e0; 
+            border-radius: 15px 15px 15px 0; 
+            max-width: 80%; 
+        }
+        .agent-message ul, .agent-message ol { 
+            padding-left: 20px; 
+            margin: 5px 0; 
+            color: #c0c0c0;
+        }
+        
+        #command-input { 
+            width: calc(100% - 100px); 
+            padding: 12px; 
+            box-sizing: border-box; 
+            border: 1px solid #92e6a7; 
+            border-radius: 20px 0 0 20px; 
+            outline: none; 
+            display: inline-block; 
+            background-color: #3a3a5a; /* Fundo do input */
+            color: #e0e0e0; /* Texto digitado */
+        }
+        #command-input::placeholder {
+            color: #a0a0b0; /* Cor do placeholder */
+        }
+        button { 
+            width: 100px; 
+            padding: 12px; 
+            background-color: #92e6a7; /* Verde claro para o botão */
+            color: #1a1a2e; /* Texto escuro no botão */
+            border: none; 
+            cursor: pointer; 
+            border-radius: 0 20px 20px 0; 
+            display: inline-block; 
+            margin-left: -5px; 
+        }
+        button:hover { 
+            background-color: #7bd48f; 
+        }
+        .input-group { 
+            display: flex; 
+        }
+        .error { 
+            color: #ff6b6b; 
+            font-weight: bold; 
+        }
+        small { 
+            display: block; 
+            margin-top: 5px; 
+            color: #a0a0b0; 
+            font-size: 0.8em; 
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🗓️ Seu Agente de Agenda</h1>
-        
-        <div id="chat-area">
-            <div class="agent-message"><p><strong>Agente:</strong> Olá! Seu agente de planejamento está online. Pergunte sobre sua agenda ou me peça para agendar algo!</p></div>
-        </div>
-        
-        <div class="input-group">
-            <input type="text" id="command-input" placeholder="Ex: Sugira minha programação de amanhã" required>
-            <button onclick="sendCommand()">Enviar</button>
-        </div>
-        
-        <p style="margin-top: 15px; font-size: 0.7em; text-align: center;">URL: <span id="api-url-display"></span></p>
-    </div>
-
-    <script>
-        // --- CONFIGURAÇÃO ---
-        const API_BASE_URL = "https://agente-planejamento.onrender.com"; // EX: "https://seu-projeto.onrender.com"
-        const API_TOKEN = "tk_pergunta"; // EX: "seutokensecreto123"
-        
-        const chatArea = document.getElementById('chat-area');
-        const input = document.getElementById('command-input');
-        
-        document.getElementById('api-url-display').textContent = API_BASE_URL + "/chat";
-
-        // 1. Variável GLOBAL para armazenar o histórico
-        // Estrutura: [{role: "user"|"model", text: "..."}]
-        let conversationHistory = [
-            // Pré-popula o histórico com a mensagem inicial do agente
-            { role: 'model', text: 'Olá! Seu agente de planejamento está online. Pergunte sobre sua agenda ou me peça para agendar algo!'}
-        ];
-
-
-        function appendMessage(sender, text, addToHistory = true) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = sender === 'user' ? 'user-message' : 'agent-message';
-            
-            const messageText = document.createElement('p');
-            
-            if (sender === 'agent') {
-                // Usa marked.js para converter o markdown em HTML
-                // Remove a tag <small> de diagnóstico antes de renderizar (apenas se addToHistory for true, i.e., para a resposta principal)
-                const cleanText = text.replace(/<small>.*<\/small>/gs, '').trim(); 
-                messageText.innerHTML = `<strong>Agente:</strong> ${marked.parse(text)}`;
-                
-                if (addToHistory) {
-                    // Adiciona APENAS o texto puro do agente (sem tags HTML) ao histórico
-                    conversationHistory.push({ role: 'model', text: cleanText });
-                }
-
-            } else { // 'user'
-                messageText.innerHTML = `<strong>Você:</strong> ${text}`;
-                
-                if (addToHistory) {
-                    // Adiciona o texto puro do usuário ao histórico
-                    conversationHistory.push({ role: 'user', text: text });
-                }
-            }
-
-            messageDiv.appendChild(messageText);
-            chatArea.appendChild(messageDiv);
-            chatArea.scrollTop = chatArea.scrollHeight;
-        }
+    <div class="container">
+        <h1>🗓️ Seu Agente de Agenda</h1>
         
-        // Remove a chamada inicial, pois ela está no array
-        document.querySelector('.agent-message').remove();
+        <div id="chat-area">
+            <div class="agent-message"><p><strong>Agente:</strong> Olá! Seu agente de planejamento está online. Pergunte sobre sua agenda ou me peça para agendar algo!</p></div>
+        </div>
+        
+        <div class="input-group">
+            <input type="text" id="command-input" placeholder="Ex: Sugira minha programação de amanhã" required>
+            <button onclick="sendCommand()">Enviar</button>
+        </div>
+        
+        <p style="margin-top: 15px; font-size: 0.7em; text-align: center;">URL: <span id="api-url-display"></span></p>
+    </div>
 
+    <script>
+        // --- CONFIGURAÇÃO ---
+        const API_BASE_URL = "https://agente-planejamento.onrender.com"; // EX: "https://seu-projeto.onrender.com"
+        const API_TOKEN = "tk_pergunta"; // EX: "seutokensecreto123"
+        
+        const chatArea = document.getElementById('chat-area');
+        const input = document.getElementById('command-input');
+        
+        document.getElementById('api-url-display').textContent = API_BASE_URL + "/chat";
 
-        async function sendCommand() {
-            const query = input.value.trim();
-            if (!query) return;
-
-            // 1. Adiciona a mensagem do usuário ao histórico e exibe na tela
-            appendMessage('user', query);
-            input.value = '';
-
-            // 2. Monta a requisição, incluindo o histórico
-            const encodedQuery = encodeURIComponent(query);
-            
-            // Converte o array de histórico para JSON string e codifica
-            const historyJson = encodeURIComponent(JSON.stringify(conversationHistory));
+        function appendMessage(sender, text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = sender === 'user' ? 'user-message' : 'agent-message';
             
-            // Monta a URL com os parâmetros query e history
-            const url = `${API_BASE_URL}/chat?query=${encodedQuery}&token=${API_TOKEN}&history=${historyJson}`;
+            const messageText = document.createElement('p');
+            
+            if (sender === 'agent') {
+                // USA MARKED.JS PARA CONVERTER O MARKDOWN EM HTML (LISTAS, NEGRITO)
+                messageText.innerHTML = `<strong>Agente:</strong> ${marked.parse(text)}`;
+            } else {
+                messageText.innerHTML = `<strong>Você:</strong> ${text}`;
+            }
 
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
+            messageDiv.appendChild(messageText);
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
 
-                if (response.ok) {
-                    let agentResponse = data.answer;
-                    
-                    // Adiciona info de diagnóstico
-                    let diagnosticInfo = '';
-                    if (data.function_used) {
-                        diagnosticInfo = `Função usada: ${data.function_used}`;
-                    } else if (data.function_used === null) {
-                        // Se a função for null, assumimos que foi uma resposta direta (ou confirmação)
-                        diagnosticInfo = `Ação realizada com sucesso (Resposta Direta).`; 
-                    }
-                    
-                    // 3. Adiciona a resposta do agente ao histórico E exibe na tela
-                    // A função appendMessage agora cuida de adicionar ao histórico
-                    appendMessage('agent', agentResponse + `\n\n<small>${diagnosticInfo}</small>`);
+        async function sendCommand() {
+            const query = input.value.trim();
+            if (!query) return;
 
-                } else {
-                    // Não adicionamos erros ao histórico, pois são falhas técnicas
-                    appendMessage('agent', `<span class="error">ERRO (${response.status}): ${data.detail || "Falha ao processar comando."}</span>`, false);
-                }
+            appendMessage('user', query);
+            input.value = '';
 
-            } catch (error) {
-                console.error("Erro de comunicação:", error);
-                appendMessage('agent', `<span class="error">ERRO DE COMUNICAÇÃO: Verifique a URL Base e o Token.</span>`, false);
-            }
-        }
-        
-        input.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                sendCommand();
-            }
-        });
-    </script>
+            const encodedQuery = encodeURIComponent(query);
+            const url = `${API_BASE_URL}/chat?query=${encodedQuery}&token=${API_TOKEN}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (response.ok) {
+                    let agentResponse = data.answer;
+                    
+                    // Adiciona info de diagnóstico
+                    let diagnosticInfo = '';
+                    if (data.function_used) {
+                        diagnosticInfo = `Função usada: ${data.function_used}`;
+                    } else if (data.function_used === null) {
+                        diagnosticInfo = `Ação realizada com sucesso.`; 
+                    }
+                    
+                    // Concatena a resposta do Gemini com a informação de diagnóstico
+                    appendMessage('agent', agentResponse + `\n\n<small>${diagnosticInfo}</small>`);
+
+                } else {
+                    appendMessage('agent', `<span class="error">ERRO (${response.status}): ${data.detail || "Falha ao processar comando."}</span>`);
+                }
+
+            } catch (error) {
+                console.error("Erro de comunicação:", error);
+                appendMessage('agent', `<span class="error">ERRO DE COMUNICAÇÃO: Verifique a URL Base e o Token.</span>`);
+            }
+        }
+        
+        input.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendCommand();
+            }
+        });
+    </script>
 </body>
 </html>
